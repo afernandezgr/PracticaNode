@@ -19,7 +19,7 @@
             "venta":true,
             "precio":500.00,
             "foto": "images/anuncios/ipad.jpg",
-            "tags": ["lifestyle","mobile"]
+            "tags": ["lifestyle","mobile","work"]
         },
         {
             "nombre":"Audi A4",

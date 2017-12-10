@@ -3,16 +3,40 @@
 const express = require('express');
 const router = express.Router();
 
-
-const jwtAuth=require('../../lib/jwtAuth');
-
-router.use(jwtAuth());
+//  Activación de autenticación por token
+//const jwtAuth=require('../../lib/jwtAuth');
+//router.use(jwtAuth());
 
 // cargar el modelo de Anuncios
 const Anuncio = require('../../models/Anuncio');
 
+
 /**
- * GET /agentes
+ * GET /tags
+ * Devuelve la lista de tagas distintas de todos los anuncios incluidos en base de datos
+ */
+
+router.get('/tags',async (req,res,next) =>{
+  //console.log('paso');
+  try{
+  
+   // Realizamos una busqueda entre todos los anuncios seleccionando todas las tags distintas presentes en base de datos
+
+   const query=Anuncio.distinct('tags',{},function(err,anuncio)
+  
+   {
+    if (err) return handleError(err);
+    res.json({sucess: true, result: anuncio});
+   })
+ }
+  catch(err){
+    next(err);
+  }
+});
+
+
+/**
+ * GET /anuncios
  * Obtener una lista de anuncios en base a unos criterios
  */
 
@@ -77,6 +101,7 @@ router.get('/', async (req,res,next)=>{
   }
 
 });
+
 
 
 module.exports = router;

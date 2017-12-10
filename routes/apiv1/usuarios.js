@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const SHA256 = require('crypto-js/sha256');
-
+const CustomError = require('../../locale/CustomError');
 
 
 
@@ -30,8 +30,7 @@ router.post('/', (req, res, next) => {
       next(err);
       return;
     }
-
-    res.json({ success: true, result: usuarioGuardado });
+    res.json({ success: true, result: CustomError.translateMessage('USER_SAVED',reg.body.lang) });
   })
 });
 
