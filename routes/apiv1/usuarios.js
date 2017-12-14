@@ -11,12 +11,16 @@ const CustomError = require('../../locale/CustomError');
 const Usuario = require('../../models/Usuario');
 
 
-
 /**
  * POST /usuarios
- * Crea un usuaurio en base al nombre, email y clave introducido por el usuario
- * La clave es hasheada con SHA256 antes de ser almacenada en base de datos
+ * Descripción: Crea un usuaurio en base al nombre, email y clave introducido por el cliente
+ *
+ * Parametros que se le pasan:
+ * nombre: Nombre del usuario
+ * email: Email del usuario (será el usuario empleado para hacer login)
+ * clave: Clave a asignar al usuario que estamos registrando. En base de datos no se    *almacenará nunca la clave propiamente dicha del usuario usuario, sino el hash de dicha *clave, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado 
  */
+
 router.post('/', (req, res, next) => {
   // creamos un usuario en memoria
   const usuario = new Usuario(req.body);

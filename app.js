@@ -24,9 +24,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 //Cargamos nuestras rutas
-app.use('/', require('./routes/index'));
-app.use('/users', require('./routes/users'));
-
 // Rutas del APIv1
 app.use('/apiv1/authenticate', require('./routes/apiv1/authenticate'));
 app.use('/apiv1/anuncios', require('./routes/apiv1/anuncios'));
@@ -42,13 +39,32 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+
+  if (err.array){ //es un error de express-validator
+    err.status = 422; //unprocesable entity...errores de validación
+    const errInfo=err.array({ onlyFirstError: true})[0];
+    err.message = isAPI(req) ? 
+      {message:'Not valid', errors:err.mapped()}:  //para APIs
+      `Not valid - ${errInfo.param} ${errInfo.msg}`; //para otras peticiones
+  }
+
+  res.status(err.status || 500);
+
+  if (isAPI(req)){  //si es api devuelvo json
+   res.json({success: false, error: err.message});
+   return; //devolvemos return para que no siga ejecutandose
+  }
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
   res.render('error');
 });
+
+//Para contolar que es una llamada a API
+function isAPI(req){
+  return req.originalUrl.indexOf('/apiv')===0;
+}
 
 module.exports = app;
