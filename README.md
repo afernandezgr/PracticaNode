@@ -1,5 +1,20 @@
 # Manual de uso de API REST NodePop 
 
+## Consideraciones previas
+
+La API sobreentiende que el motor de base de datos Mongo está en ejecución previamente con un script similar la que se incluye a continuación:
+
+```
+./bin/mongod --dbpath ./data/db --directoryperdb
+```
+
+El nombre que se le ha dado a la base de datos es: **nodepop**
+
+## Consideraciones previas para despliegue
+
+Copiar el fichero .env.example a .env y revisar los valores ahí definidos
+
+
 ## Procedimiento para inicializar la base de datos
 
 Desde consola ejecutar el siguiente comando 
@@ -25,6 +40,14 @@ Desde consola ejecutar el siguiente comando
 npm run start
 ```
 
+## Procedimiento para arrancar API en modo single y conexión https
+
+Desde consola ejecutar el siguiente comando 
+
+```
+npm run starthttps
+```
+
 ## Procedimiento para arrancar API en modo cluster
 
 Desde consola ejecutar el siguiente comando 
@@ -34,7 +57,7 @@ npm run cluster
 ```
 
 
-##Métodos disponibles en la API
+## Métodos disponibles en la API
 
 ## Asociados a usuarios
 Ruta:
@@ -51,6 +74,9 @@ Parametros que se le pueden pasar:
  * *clave*: Clave a asignar al usuario que estamos registrando. En base de datos no se
 almacenará nunca la clave propiamente dicha del usuario usuario, sino el hash de dicha *clave, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado 
  
+Prerequisitos para su invocación:
+* Para dar de alta un nuevo usaurio se deberán proporcionar los 3 campos de forma obligatorioa
+* El campo email es único y no se puede repetir en base de datos
 
 ## Asociados a anuncios
 Ruta:
