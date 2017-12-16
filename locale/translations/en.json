@@ -1,0 +1,15 @@
+{
+    "USER_NOT_FOUND":"User not found",
+    "INCORRECT_CREDENTIALS":"Incorrect credentials",
+    "INVALID_TOKEN":"Invalid token",  
+    "NO_TOKEN_PROVIDED":"No token provided",
+    "USER_SAVED":"User saved",
+    "FIELDS_REQUIRED":"The fields nombre, email and clave are mandatory",
+    "USER_ALREADY_REGISTERED":"Email already in use",
+    "EMAIL_AND_PASS_REQUIRED":"Email and password are mandatory fields",
+    "NOT_VALID_VALUE_VENTA":"Value introduced for venta is not valid, only true or false values are allowed",
+    "PRECIO_IS_NOT_NUMERIC_VALUE":"The value introduced for precio is not a numeric value valid",
+    "VALUE_PRECIO_INTERVAL_NOT_VALID":"Values introduced for precio interval are not valid",
+    "INITIAL_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Value introduced for initial value of interval is not valid",
+    "END_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Value introduced for end value of interval is not valid"
+}

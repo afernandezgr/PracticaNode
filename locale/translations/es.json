@@ -1,0 +1,15 @@
+{
+    "USER_NOT_FOUND": "Usuario no encontrado",  
+    "INCORRECT_CREDENTIALS":"Credenciales incorrecta",
+    "INVALID_TOKEN":"Token invalido",
+    "NO_TOKEN_PROVIDED":"Token requeridoo",
+    "USER_SAVED": "Usuario registrado",
+    "FIELDS_REQUIRED":"Los campos de nombre, email y clave son obligatorios",
+    "USER_ALREADY_REGISTERED":"Email ya en uso",
+    "EMAIL_AND_PASS_REQUIRED":"Email y clave son campos requeridos",
+    "NOT_VALID_VALUE_VENTA":"Valor introducido para venta no es valido, solo true o false son permitidos",
+    "PRECIO_IS_NOT_NUMERIC_VALUE":"El valor introducir para precio no es un valor numérico valido",
+    "VALUE_PRECIO_INTERVAL_NOT_VALID":"Valor para intervalo de precio no validos",
+    "INITIAL_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Valor introducido para inicio de intervalo no valido",
+    "END_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Valor introducido para fin de intervalo no valido"
+}
