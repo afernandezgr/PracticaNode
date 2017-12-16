@@ -8,7 +8,7 @@ const anuncioSchema = mongoose.Schema({
   venta: Boolean,
   precio: Number,
   foto: String,
-  tags: [String]
+  tags: [String]  //dato que de momento solamente vamos a hacer operaciones de lectura de anuncios no vamos a gestionar que los valores introducidos en tags sean los preestablecidos
 });
 
 

@@ -2,10 +2,11 @@
 
 const express = require('express');
 const router = express.Router();
+const CustomError = require('../../locale/CustomError');
 
 //  Activación de autenticación por token
-//const jwtAuth=require('../../lib/jwtAuth');
-//router.use(jwtAuth());
+const jwtAuth=require('../../lib/jwtAuth');
+router.use(jwtAuth());
 
 // cargar el modelo de Anuncios
 const Anuncio = require('../../models/Anuncio');
@@ -56,17 +57,31 @@ router.get('/', async (req,res,next)=>{
 
     //creo el filtro vacio
     const filter={};
+
+    //Si ha introducir valor nombre buscará los registros cuyo campo nombre comiencen por los caracteres introducidos
     if (nombre){
       filter.nombre=new RegExp('^'+nombre,"i");
     }
-
-    if (venta){
+   
+   //validamos campo venta
+    if (venta && venta.toString()!='true' && venta.toString()!='false')
+    {
+      res.status(401).json({success: false, result: CustomError.translateMessage('NOT_VALID_VALUE_VENTA')});
+      return;
+    } 
+    if (venta){   
       filter.venta=venta;
     }
 
+    //validamos campo precio
     if (precio){
       if (precio.indexOf("-")===-1){
           //no incluye guion para marcar intervalo
+          if (isNaN(parseFloat(precio))) //vamos a ver si es un valor numérico
+          {
+            res.status(401).json({success: false, result: CustomError.translateMessage('PRECIO_IS_NOT_NUMERIC_VALUE')});
+            return;
+          } 
           filter.precio=precio;    
           console.log(filter.precio); 
       }
@@ -74,21 +89,39 @@ router.get('/', async (req,res,next)=>{
           const inicio=precio.substring(0,precio.indexOf("-"));
           const fin=precio.substring(precio.indexOf("-")+1);
           //si hay rango de precio inicial y final
+          console.log (isNaN(parseFloat(inicio)) , isNaN(parseFloat(fin)))
           if (inicio && fin)
           {
+            //console.log (sNaN(parseFloat(inicio)) , isNaN(parseFloat(fin)))
+            if (isNaN(parseFloat(inicio)) || isNaN(parseFloat(fin))) //vamos a ver si son valores numericos los del intervalo
+            {
+              res.status(401).json({success: false, result: CustomError.translateMessage('VALUE_PRECIO_INTERVAL_NOT_VALID')});
+              return;
+            } 
             filter.precio={$gte:inicio, $lte:fin};
           }
           else if (inicio) //si solo lo hay inicial
           {
+            if (isNaN(parseFloat(inicio))) //vamos a ver si es un valor numérico
+            {
+              res.status(401).json({success: false, result: CustomError.translateMessage('INITIAL_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID')});
+              return;
+            } 
             filter.precio={$gte:inicio};
           }
           else // si solo lo hay final
           {
+            if (isNaN(parseFloat(fin))) //vamos a ver si es un valor numérico
+            {
+              res.status(401).json({success: false, result: CustomError.translateMessage('END_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID')});
+              return;
+            } 
             filter.precio={$lte:fin};
           }
       } 
     }
 
+    //Verificamos parametros tag , admite cualquier valor para el tag a la hora de búsqueda
     if (tag){
       filter.tags={$in: [tag]};
       console.log(filter.tag);

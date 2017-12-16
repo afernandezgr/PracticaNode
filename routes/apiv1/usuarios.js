@@ -17,13 +17,21 @@ const Usuario = require('../../models/Usuario');
  *
  * Parametros que se le pasan:
  * nombre: Nombre del usuario
- * email: Email del usuario (será el usuario empleado para hacer login)
- * clave: Clave a asignar al usuario que estamos registrando. En base de datos no se    *almacenará nunca la clave propiamente dicha del usuario usuario, sino el hash de dicha *clave, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado 
+ * email: Email del usuario (será el usuario empleado para hacer login, no se podrá repetir en base de datos)
+ * clave: Clave a asignar al usuario que estamos registrando. En base de datos no se almacenará nunca la clave propiamente dicha del usuario usuario, 
+ * sino el hash de dicha *clave, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado 
  */
 
 router.post('/', (req, res, next) => {
   // creamos un usuario en memoria
   const usuario = new Usuario(req.body);
+
+  console.log(usuario.nombre , ' ', usuario.email, ' ' , usuario.clave);
+  if (!usuario.nombre || !usuario.email || !usuario.clave)
+  {
+     res.status(401).json({success: false, result: CustomError.translateMessage('FIELDS_REQUIRED')});
+     return;
+  }
 
   //hasheamos la clave prorporcionada por el usuario antes de almacenarla en base de datos
   usuario.clave=SHA256(req.body.clave);
@@ -31,10 +39,16 @@ router.post('/', (req, res, next) => {
   // lo persistimos en la colección de usuarios
   usuario.save((err, usuarioGuardado) => {
     if (err) {
+      console.log(err);
+       if (err.code=11000){ // el error 11000 ese el error de clave duplicada y al haber marcado email como unique no permitirá almacenar 2 emails iguales
+        res.status(401).json({success: false, result: CustomError.translateMessage('USER_ALREADY_REGISTERED')});
+        return;
+      }
+      
       next(err);
       return;
     }
-    res.json({ success: true, result: CustomError.translateMessage('USER_SAVED',reg.body.lang) });
+    res.json({ success: true, result: CustomError.translateMessage('USER_SAVED') });
   })
 });
 
