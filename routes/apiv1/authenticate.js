@@ -25,8 +25,6 @@ router.post('/',async (req,res,next)=>{
      // Buscamos en la base de datos en usaurio
       const usuario =  await Usuario.findOne({email:email}).exec();
       
-      //console.log(clave , ' ' , SHA256(clave).toString());
-      //console.log(usuario.clave);
 
       if (!usuario || usuario.clave !== SHA256(clave).toString()) 
       {      

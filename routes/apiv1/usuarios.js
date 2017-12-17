@@ -4,10 +4,10 @@ const express = require('express');
 const router = express.Router();
 const SHA256 = require('crypto-js/sha256');
 const CustomError = require('../../locale/CustomError');
+const validatorEmail= require('email-validator');
 
 
-
-// cargar el modelo de Agente
+// cargar el modelo de Usuarios
 const Usuario = require('../../models/Usuario');
 
 
@@ -26,10 +26,18 @@ router.post('/', (req, res, next) => {
   // creamos un usuario en memoria
   const usuario = new Usuario(req.body);
 
-  console.log(usuario.nombre , ' ', usuario.email, ' ' , usuario.clave);
+  //console.log(usuario.nombre , ' ', usuario.email, ' ' , usuario.clave);
+  //Verificamos que todos los campos requeridos son proporcionados
   if (!usuario.nombre || !usuario.email || !usuario.clave)
   {
      res.status(401).json({success: false, result: CustomError.translateMessage('FIELDS_REQUIRED')});
+     return;
+  }
+
+  //verificamos que el formato del email proporcionado es valido
+  if (!validatorEmail.validate(usuario.email))
+  {
+     res.status(401).json({success: false, result: CustomError.translateMessage('EMAIL_MALFORMED')});
      return;
   }
 

@@ -11,5 +11,6 @@
     "PRECIO_IS_NOT_NUMERIC_VALUE":"El valor introducir para precio no es un valor numérico valido",
     "VALUE_PRECIO_INTERVAL_NOT_VALID":"Valor para intervalo de precio no validos",
     "INITIAL_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Valor introducido para inicio de intervalo no valido",
-    "END_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Valor introducido para fin de intervalo no valido"
+    "END_VALUE_FOR_INTERVAL_PRECIO_NOT_VALID":"Valor introducido para fin de intervalo no valido",
+    "EMAIL_MALFORMED":"Formato de email incorrecto"
 }

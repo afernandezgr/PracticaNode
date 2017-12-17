@@ -12,7 +12,10 @@ El nombre que se le ha dado a la base de datos es: **nodepop**
 
 ## Consideraciones previas para despliegue
 
-Copiar el fichero .env.example a .env y revisar los valores ahí definidos
+* Copiar el fichero .env.example a .env y revisar los valores ahí definidos
+
+* Modificar la carpeta *certificados* para incluir en ella los certificados asociados al entorno de Producción.
+Importante que el fichero que incluya el certificado se llame **host.cert** y el que incluye la clave privada se llame **host.key**
 
 
 ## Procedimiento para inicializar la base de datos
@@ -48,6 +51,9 @@ Desde consola ejecutar el siguiente comando
 npm run starthttps
 ```
 
+Nota: en la carpeta 'certificados' se pueden encontrar los certificados utilizados para securizar la comunicación (se trata de certificados autofirmados por lo cual pueden saltar avisos en los distintos navegadores)
+Durante el pase a producción se deberán incluir los certificados asociados al entorno de producción, sustituyendo los empleados (autofirmados) por unos de una CA reconocida.
+
 ## Procedimiento para arrancar API en modo cluster
 
 Desde consola ejecutar el siguiente comando 
@@ -59,20 +65,49 @@ npm run cluster
 
 ## Métodos disponibles en la API
 
+**Notas previas:**
+
+
+Los mensajes que devuelve la apliación serán devueltos al cliente en base al lenguaje configurado en el cliente, para el API se apoya en la libreria, i18n-node
+
+[https://github.com/mashpie/i18n-node]()
+
+En la carpetea *locale* se encuentra el módulo *CustomError *que cuenta con un método *translateMessage* al que tan solo hay que pasarle la cadena de mensaje especificada que desea ser devuelta en el lenguaje del cliente.
+Dentro de la carpeta *locale/translations* existe un fichero JSON, por cada idioma, donde se han incorporado los mensajes de error en los distintos idiomas configurados (inglés y español)
+
+Por ejemplo para inglés:
+
+{
+
+    "USER_NOT_FOUND":"User not found",  
+    "INCORRECT_CREDENTIALS":"Incorrect credentials",
+    ...
+}
+
+Por ejemplo para castellano:
+
+{
+
+    "USER_NOT_FOUND": "Usuario no encontrado",  
+    "INCORRECT_CREDENTIALS":"Credenciales incorrecta",
+    ...
+}
+
 ## Asociados a usuarios
 Ruta:
 **/apiv1/usuarios**
 
 Tipo: `POST /usuarios`
 
-Descripción: Crea un usuaurio en base al nombre, email y clave introducido por el cliente
+Descripción: Crea un usuaurio en base al nombre, email y clave introducido por el cliente.
+Los tres parametros son obligatorios y el email no puede estar repetido en base de datos, dado que es el identificado único que identifica al usuario
 
 Parametros que se le pueden pasar:
 
- * *nombre*: Nombre del usuario
- * *email*: Email del usuario (será el usuario empleado para hacer login)
- * *clave*: Clave a asignar al usuario que estamos registrando. En base de datos no se
-almacenará nunca la clave propiamente dicha del usuario usuario, sino el hash de dicha *clave, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado 
+ * *nombre*: (obligatorio) Nombre del usuario
+ * *email*: (obligatorio) Email del usuario (será el usuario empleado para hacer login)
+ * *clave*: (obligatorio) Clave a asignar al usuario que estamos registrando. En base de datos no se
+almacenará nunca la clave propiamente dicha del usuario usuario, sino el hash de dicha *clave*, como medida de seguridad. Esto garantiza la no reversibilidad del datos almacenado. Para una futura versión se podría incluir la opción de un 'salt' para la generación del hash que vendría definida para el usuario en cuestión.
  
 Prerequisitos para su invocación:
 * Para dar de alta un nuevo usaurio se deberán proporcionar los 3 campos de forma obligatorioa
@@ -84,14 +119,17 @@ Ruta:
 
 Tipo: `GET /anuncios`
 
-Descripción:Obtener una lista de anuncios en base a unos filtros proporcionados por el usuario
+Descripción:Obtener una lista de anuncios en base a unos filtros proporcionados por el usuario.
+Previo a poder obtener la lista de anuncios en base a los criterios que establezca el usuario éste debe estar identificado con un usuario válido y contar con un token válido.
+El token puede ser proporcionado a través de la querystring, body o headers.
+
 
 Parametros que se le pueden pasar:
 
- * *tag*: indicaremos una tag cualquiera de las presentes en los anuncios incorporados en base de datos (inicialmente se parten solamente de 4 pero el sistema no está limitado a ese número)
- * *nombre*: Filtará los anuncios por cualquier de los anuncios presentes en base de datos cuyo nombre de producto comience por el texto indicado
- * *venta*: Podrá tomar el valor true si se trata de anuncios de venta o false si se trata de  anuncios de demanda
- * *precio*: se podrá especificar el rango de precio del producto siguiendo este patrón para indicarlo inicio-fin :
+ * *tag*: (opcional) indicaremos una tag cualquiera de las presentes en los anuncios incorporados en base de datos (inicialmente se parten solamente de 4 pero el sistema no está limitado a ese número)
+ * *nombre*: (opcional) Filtará los anuncios por cualquier de los anuncios presentes en base de datos cuyo nombre de producto comience por el texto indicado
+ * *venta*: (opcional) Podrá tomar el valor true si se trata de anuncios de venta o false si se trata de  anuncios de demanda
+ * *precio*: (opcional) se podrá especificar el rango de precio del producto siguiendo este patrón para indicarlo inicio-fin :
     Por ejemplo:
     10-50  buscará  anuncios  con  precio  incluido  entre  estos  valores 10 y 50
          {   precio: {   '$gte':   '10',   '$lte':   '50'   }   }
@@ -101,10 +139,10 @@ Parametros que se le pueden pasar:
          {   precio:   {   '$lte':'50'   }   }
     50  buscará  los  que  tengan  precio  igual  a  50
          {   precio:   '50'   } 
-* *sort*: Permitirá indicar el nombre del campo por el que deseamos que sean ordenados los resultados
-* *skip*: Permitirá indicar a partir de que registro queremos mostrar de entre todos los resultados, este parametro en conjunción con limit nos permitirá ir paginando los resultados
-* *limit*: Permitirá indicar el número de anuncios que queremos que devuelva la consulta, en conjunción con skip nos permitirá ir paginando los resultados
-* *token*: En cada petición que realice deberá de proporcionar el token previamente facilitado al realizar la autenticación en el sistems (email + clave)
+* *sort*: (opcional) Permitirá indicar el nombre del campo por el que deseamos que sean ordenados los resultados
+* *skip*: (opcional) Permitirá indicar a partir de que registro queremos mostrar de entre todos los resultados, este parametro en conjunción con limit nos permitirá ir paginando los resultados
+* *limit*: (opcional) Permitirá indicar el número de anuncios que queremos que devuelva la consulta, en conjunción con skip nos permitirá ir paginando los resultados
+* *token*: (opcional) En cada petición que realice deberá de proporcionar el token previamente facilitado al realizar la autenticación en el sistems (email + clave). 
 
 Ruta:
 **/apiv1/anuncios/tags**
@@ -112,11 +150,12 @@ Ruta:
 Tipo: `GET /anuncios/tags`
 
 Descripción: Obtener una lista de las distintas tags presentes en todos los anuncios almacenados en base de datos.
+Previo a poder obtener la lista de anuncios en base a los criterios que establezca el usuario éste debe estar identificado con un usuario válido y contar con un token válido.
+El token puede ser proporcionado a través de la querystring, body o headers.
 
 Parametros que se le pueden pasar:
 
 No requiere de ningún parametro
-
 
 #Asociados a autenticación
 
@@ -125,8 +164,12 @@ No requiere de ningún parametro
 Tipo: `POST /authenticate`
 
 Descripción: Permite realizar la validación de un usuario y una constraseña para poder permitir el acceso a los datos almacenados en base de datos. Siguiendo el requerimiento establecido todas las operaciones que realicen a través del API han de ser previamente autenticadas haciendo uso de JWT. Lo cuál permitirá asignar un token de autenticación al usuario y si el email y la clave proporcionada son válidas.
+El token asignado tras la autenticación correcta puede ser enviado a través de querystring, body o headers.
 
 Parametros que se le pueden pasar:
 
-* *email*: Email del usuario
-* *clave*: Clave del usuario, a la cual se le calculará el hash y se comparará con el hash almacenado en base de datos previo a dar por autenticado al usuario.
+* *email*: (obligatorio) Email del usuario
+* *clave*: (obligatario) Clave del usuario, a la cual se le calculará el hash y se comparará con el hash almacenado en base de datos previo a dar por autenticado al usuario.
+
+
+**
